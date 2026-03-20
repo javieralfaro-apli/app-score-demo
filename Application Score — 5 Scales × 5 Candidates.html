@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Application Score — Scale Comparison</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary-main: #1B5BD8;
+  --primary-light: #146FEB;
+  --primary-dark: #213AB9;
+  --success-main: #008556;
+  --success-light: #e6f4ee;
+  --success-dark: #00572D;
+  --warning-main: #C25604;
+  --warning-light: #fff3e6;
+  --warning-dark: #8B2800;
+  --error-main: #9C0909;
+  --error-light: #fde8e8;
+  --error-dark: #670000;
+  --info-main: #0A4E9A;
+  --info-light: #e8f0fa;
+  --text-primary: rgba(0,0,0,0.87);
+  --text-secondary: rgba(0,0,0,0.67);
+  --text-disabled: rgba(0,0,0,0.38);
+  --bg-paper: #FFFFFF;
+  --bg-default: #EFF2F3;
+  --ui-divider: #BDBDBD;
+  --ui-border: #757575;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Source Sans Pro', sans-serif; color: var(--text-primary); background: var(--bg-default); padding: 24px; }
+h1 { font-weight: 400; font-size: 26px; letter-spacing: 0px; margin-bottom: 8px; }
+h2 { font-weight: 400; font-size: 22px; letter-spacing: 0.15px; margin-bottom: 16px; }
+h3 { font-weight: 600; font-size: 18px; letter-spacing: 0.12px; margin-bottom: 12px; }
+h4 { font-weight: 600; font-size: 16px; letter-spacing: 0.12px; }
+h5 { font-weight: 600; font-size: 14px; letter-spacing: 0.25px; }
+.body1 { font-size: 16px; letter-spacing: 0.5px; line-height: 1.5; }
+.body2 { font-size: 14px; letter-spacing: 0.25px; line-height: 1.5; }
+.caption { font-size: 12px; letter-spacing: 0.4px; color: var(--text-secondary); }
+
+.header { background: var(--bg-paper); border-radius: 4px; padding: 32px; margin-bottom: 24px; border-bottom: 3px solid var(--primary-main); }
+.header p { max-width: 960px; margin-top: 8px; }
+
+.tab-bar { display: flex; gap: 0; margin-bottom: 24px; border-bottom: 2px solid var(--ui-divider); background: var(--bg-paper); border-radius: 4px 4px 0 0; overflow-x: auto; }
+.tab { padding: 14px 24px; cursor: pointer; font-size: 14px; font-weight: 600; letter-spacing: 0.25px; text-transform: uppercase; color: var(--text-secondary); border-bottom: 3px solid transparent; margin-bottom: -2px; white-space: nowrap; transition: all 0.15s; user-select: none; }
+.tab:hover { color: var(--primary-main); background: #f5f8ff; }
+.tab.active { color: var(--primary-main); border-bottom-color: var(--primary-main); }
+
+.scale-panel { display: none; }
+.scale-panel.active { display: block; }
+
+.scale-header { background: var(--bg-paper); border-radius: 4px; padding: 24px; margin-bottom: 24px; }
+.scale-badge { display: inline-block; padding: 4px 16px; border-radius: 16px; font-size: 12px; font-weight: 600; letter-spacing: 0.56px; text-transform: uppercase; margin-bottom: 12px; }
+.badge-conservative { background: #e8f0fa; color: var(--info-main); }
+.badge-moderate { background: #e6f4ee; color: var(--success-dark); }
+.badge-balanced { background: #fff3e6; color: var(--warning-dark); }
+.badge-advanced { background: #fde8e8; color: #9C0909; }
+.badge-ai { background: #f0e6ff; color: #5B21B6; }
+
+.scale-meta { display: flex; gap: 24px; flex-wrap: wrap; margin-top: 16px; }
+.meta-item { background: var(--bg-default); border-radius: 4px; padding: 12px 16px; flex: 1; min-width: 160px; }
+.meta-label { font-size: 12px; letter-spacing: 0.15px; color: var(--text-secondary); margin-bottom: 4px; }
+.meta-value { font-size: 16px; font-weight: 600; }
+
+.candidates-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 24px; margin-bottom: 32px; }
+.card { background: var(--bg-paper); border-radius: 4px; overflow: hidden; border: 1px solid var(--ui-divider); }
+.card-rank { padding: 4px 16px; font-size: 12px; font-weight: 600; letter-spacing: 0.56px; text-transform: uppercase; color: white; }
+.rank-1 { background: var(--success-main); }
+.rank-2 { background: #2E7D32; }
+.rank-3 { background: var(--warning-main); }
+.rank-4 { background: #E65100; }
+.rank-5 { background: var(--error-main); }
+
+.card-top { padding: 20px 20px 12px; display: flex; justify-content: space-between; align-items: flex-start; }
+.card-name { font-weight: 600; font-size: 18px; }
+.card-bg { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+.score-circle { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 600; color: white; flex-shrink: 0; }
+.score-high { background: var(--success-main); }
+.score-mid { background: var(--warning-main); }
+.score-low { background: var(--error-main); }
+.score-none { background: var(--text-disabled); font-size: 14px; }
+
+.card-summary { padding: 0 20px 16px; }
+.summary-chip { display: inline-flex; align-items: center; gap: 6px; background: #f5f8ff; border: 1px solid #c5d5f0; border-radius: 16px; padding: 4px 12px; font-size: 12px; color: var(--primary-dark); margin-bottom: 10px; cursor: pointer; }
+.summary-text { font-size: 14px; line-height: 1.55; color: var(--text-secondary); display: none; margin-bottom: 12px; padding: 12px; background: #fafbfc; border-radius: 4px; border-left: 3px solid var(--primary-light); }
+.summary-text.open { display: block; }
+
+.qual-list { padding: 0 20px 20px; }
+.qual-item { display: flex; align-items: flex-start; gap: 8px; padding: 6px 0; border-top: 1px solid #f0f0f0; }
+.qual-item:first-child { border-top: none; }
+.qual-icon { flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; color: white; margin-top: 2px; }
+.qi-met { background: var(--success-main); }
+.qi-not { background: var(--error-main); }
+.qi-abs { background: var(--text-disabled); }
+.qual-text { font-size: 13px; line-height: 1.4; }
+.qual-evidence { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+.tier-badge { display: inline-block; font-size: 10px; padding: 1px 6px; border-radius: 8px; margin-left: 4px; vertical-align: middle; }
+.tier-1 { background: #e6f4ee; color: var(--success-dark); }
+.tier-3 { background: #fff3e6; color: var(--warning-dark); }
+.tier-inf { background: #f0e6ff; color: #5B21B6; }
+
+.ranking-table { width: 100%; border-collapse: collapse; margin-top: 16px; background: var(--bg-paper); border-radius: 4px; overflow: hidden; }
+.ranking-table th { background: var(--bg-default); text-align: left; padding: 10px 16px; font-size: 12px; font-weight: 600; letter-spacing: 0.25px; text-transform: uppercase; color: var(--text-secondary); }
+.ranking-table td { padding: 10px 16px; font-size: 14px; border-top: 1px solid #f0f0f0; }
+.ranking-table tr:hover td { background: #fafbfc; }
+
+.disclaimer { background: var(--info-light); border-left: 3px solid var(--info-main); padding: 16px; border-radius: 0 4px 4px 0; margin-top: 24px; font-size: 13px; color: var(--info-main); line-height: 1.5; }
+
+.spread-chart { display: flex; align-items: flex-end; gap: 12px; padding: 16px 0 0; }
+.spread-bar-wrap { display: flex; flex-direction: column; align-items: center; flex: 1; }
+.spread-bar { width: 100%; max-width: 60px; border-radius: 4px 4px 0 0; transition: height 0.3s; }
+.spread-label { font-size: 11px; color: var(--text-secondary); margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 80px; text-align: center; }
+.spread-score { font-size: 13px; font-weight: 600; margin-top: 2px; }
+
+@media (max-width: 800px) {
+  .candidates-grid { grid-template-columns: 1fr; }
+  .tab { padding: 12px 14px; font-size: 12px; }
+  body { padding: 12px; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Application Score — Scale Comparison</h1>
+  <p class="body1">Five scoring scales applied to five candidates for <strong>Overnight Stocker</strong>. Each scale progressively expands the evidence the system considers and the number of screening questions configured. Same candidates, same underlying data, different outcomes.</p>
+  <p class="body2" style="margin-top:8px;color:var(--text-secondary);">The more advanced scales use 8-10 questions to create wider score bands and reduce candidate stacking. The goal: act more like a skilled recruiter reading different signals, not a checklist.</p>
+  <p class="caption" style="margin-top:12px;">Role: Overnight Stocker &nbsp;|&nbsp; Shifts: ~9pm-9am &nbsp;|&nbsp; Lift: up to 50 lbs &nbsp;|&nbsp; Equipment: pallet jacks, hand trucks &nbsp;|&nbsp; Environment: cooler/freezer</p>
+</div>
+
+<div class="tab-bar" id="tabBar"></div>
+<div id="panels"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Screening question answers (what every candidate explicitly answers)
+const C = {
+  maria:  { name:"Maria G.", bg:"10 years as UPS driver", overnight:true, lift:true, stocked:false, pallet:true, cooler:true },
+  carlos: { name:"Carlos R.", bg:"10 years Uber driver", overnight:true, lift:true, stocked:false, pallet:false, cooler:true },
+  james:  { name:"James T.", bg:"School bus driver, 5 years", overnight:true, lift:true, stocked:false, pallet:false, cooler:true },
+  priya:  { name:"Priya S.", bg:"3 years Walmart, product setting", overnight:true, lift:true, stocked:true, pallet:true, cooler:true },
+  derek:  { name:"Derek W.", bg:"Restaurant line cook, 2 years", overnight:true, lift:true, stocked:false, pallet:true, cooler:true }
+};
+const order = ["maria","carlos","james","priya","derek"];
+
+// Additional screening Qs that only appear in Scales 3+
+// These are vertical-tailored questions a Wizard or PS would recommend
+const extraQs = {
+  maria:  { fifo:false, displays:false, receiving:true, nightWeekends:true, physicalDemand:true, custService:false, inventory:false, safetyProtocol:true, tempControl:false, standWalk:true },
+  carlos: { fifo:false, displays:false, receiving:false, nightWeekends:true, physicalDemand:false, custService:true, inventory:false, safetyProtocol:false, tempControl:false, standWalk:true },
+  james:  { fifo:false, displays:false, receiving:false, nightWeekends:false, physicalDemand:false, custService:false, inventory:false, safetyProtocol:true, tempControl:false, standWalk:true },
+  priya:  { fifo:true, displays:true, receiving:true, nightWeekends:true, physicalDemand:true, custService:true, inventory:true, safetyProtocol:true, tempControl:true, standWalk:true },
+  derek:  { fifo:true, displays:false, receiving:true, nightWeekends:true, physicalDemand:true, custService:false, inventory:true, safetyProtocol:true, tempControl:true, standWalk:true }
+};
+
+// Work history (for Tier 3 inference in Scales 4-5)
+const workHistory = {
+  maria:  { title:"Package Delivery Driver", employer:"UPS", years:10, sectorMatch:"logistics", physLevel:"high", equipLevel:"high", coldExposure:false, inventoryExp:false, schedFlex:"high", custService:"moderate" },
+  carlos: { title:"Rideshare Driver", employer:"Uber", years:10, sectorMatch:"none", physLevel:"low", equipLevel:"none", coldExposure:false, inventoryExp:false, schedFlex:"high", custService:"high" },
+  james:  { title:"School Bus Driver", employer:"County School District", years:5, sectorMatch:"none", physLevel:"low", equipLevel:"low", coldExposure:false, inventoryExp:false, schedFlex:"low", custService:"moderate" },
+  priya:  { title:"Sales Associate", employer:"Walmart", years:3, sectorMatch:"retail-direct", physLevel:"high", equipLevel:"high", coldExposure:true, inventoryExp:true, schedFlex:"moderate", custService:"high" },
+  derek:  { title:"Line Cook", employer:"Chipotle", years:2, sectorMatch:"food-service", physLevel:"high", equipLevel:"moderate", coldExposure:true, inventoryExp:true, schedFlex:"high", custService:"low" }
+};
+
+// AI-inferred skills (Scale 5 only — system interprets transferability)
+const aiInfer = {
+  maria:  { stockTransfer:true, equipTransfer:true, coldTransfer:false, merchandiseTransfer:false, industryAdj:"high", schedTransfer:true, physTransfer:true, fifoTransfer:false, safetyTransfer:true },
+  carlos: { stockTransfer:false, equipTransfer:false, coldTransfer:false, merchandiseTransfer:false, industryAdj:"none", schedTransfer:true, physTransfer:false, fifoTransfer:false, safetyTransfer:false },
+  james:  { stockTransfer:false, equipTransfer:false, coldTransfer:false, merchandiseTransfer:false, industryAdj:"none", schedTransfer:false, physTransfer:false, fifoTransfer:false, safetyTransfer:true },
+  priya:  { stockTransfer:true, equipTransfer:true, coldTransfer:true, merchandiseTransfer:true, industryAdj:"direct", schedTransfer:true, physTransfer:true, fifoTransfer:true, safetyTransfer:true },
+  derek:  { stockTransfer:false, equipTransfer:true, coldTransfer:true, merchandiseTransfer:false, industryAdj:"moderate", schedTransfer:true, physTransfer:true, fifoTransfer:true, safetyTransfer:true }
+};
+
+// Summaries per scale
+const summaries = {
+  3: {
+    maria: "Candidate has 10 years of package delivery experience at UPS. Regularly handles heavy packages and operates material handling equipment. Holds a CDL. Has worked overnight and early morning shifts consistently throughout career.",
+    carlos: "Candidate has worked as a full-time rideshare driver for 10 years. Manages own schedule with extensive late-night and weekend availability. No warehouse, retail, or stocking background. Comfortable with extended hours.",
+    james: "Candidate has 5 years of experience as a school bus driver. Holds a CDL-B. Performs daily vehicle safety inspections. No retail, warehouse, or stocking experience. Primarily works mornings and early afternoons.",
+    priya: "Candidate has 3 years of retail experience at Walmart as a Sales Associate. Regularly set product on shelves, built promotional displays, rotated stock, and operated pallet jacks. Has participated in overnight store resets. Familiar with planograms and inventory scanning systems.",
+    derek: "Candidate has 2 years of experience as a line cook. Works nights and weekends in a fast-paced environment. Regularly lifts heavy items (50+ lbs) and works in walk-in coolers and freezers daily. Receives and organizes kitchen inventory nightly."
+  },
+  4: {
+    maria: "Candidate has 10 years of package delivery at UPS. System classifies this role as logistics/warehouse-adjacent: daily heavy lifting (70+ lbs), hand truck and dolly operation, and overnight sort shifts. Holds a CDL. Sector relevance: logistics (high overlap with warehouse stocking operations).",
+    carlos: "Candidate has 10 years as a full-time rideshare driver. System classifies this role as transportation/service with no warehouse, retail, or logistics overlap. Strong schedule flexibility confirmed. No equipment operation, inventory handling, or physical labor above baseline in work history.",
+    james: "Candidate has 5 years as a school bus driver. System classifies this role as transportation with no warehouse or retail overlap. CDL-B holder. Physical demands: moderate (vehicle operation, not sustained manual labor). Schedule pattern: split shift (morning/afternoon), not overnight.",
+    priya: "Candidate has 3 years as a Walmart Sales Associate. System classifies this role as directly relevant: confirmed stocking, display building, stock rotation, and pallet jack operation through both screening responses and semantic role classification. Sector relevance: retail-direct (highest match).",
+    derek: "Candidate has 2 years as a line cook at Chipotle. System classifies this role as food service with meaningful transfer: daily cooler/freezer work, regular heavy lifting (50+ lbs), inventory receiving and FIFO rotation, and hand truck operation. Sector relevance: food-service (moderate-high overlap)."
+  },
+  5: {
+    maria: "Strong fit despite no direct stocking title. 10 years at UPS provides daily heavy lifting (70+ lbs, well above the 50-lb requirement), hand truck and dolly operation, and proven overnight shift performance. Logistics environment builds transferable freight-handling skills. CDL holder. A recruiter would see this candidate as highly trainable, needing only product-specific onboarding. Gap: no retail merchandising or FIFO experience.",
+    carlos: "Limited fit. 10 years of rideshare driving demonstrates schedule flexibility and customer interaction, but the role has no physical labor component, no equipment operation, and no warehouse/retail/stocking overlap. Every core job function (stocking, pallet jacks, product rotation, cold-environment work) would need to be trained from scratch. The only transferable asset is willingness to work non-standard hours.",
+    james: "Weakest fit in the pool. 5 years of bus driving shows reliability and CDL certification, but zero transferable stocking, warehouse, or retail skills. Physical demands of bus driving don't translate to sustained heavy lifting. Schedule pattern (split mornings/afternoons) actually conflicts with overnight requirements. A recruiter would rank this below anyone with warehouse, retail, or food service background because the onboarding cost is highest with the least skill overlap.",
+    priya: "Strongest fit. 3 years at Walmart with direct stocking, display building, stock rotation, pallet jack operation, and overnight reset experience maps nearly 1:1 to Overnight Stocker requirements. Familiar with planograms, inventory scanning, and merchandising standards. A recruiter would immediately advance this candidate. The application practically screens itself.",
+    derek: "Good fit with strong transferable skills. 2 years as a line cook provides daily cooler/freezer exposure, regular 50+ lb lifting, hand truck operation, and nightly inventory receiving with FIFO rotation. Night and weekend schedule confirmed. The physical reality of a line cook role overlaps significantly with overnight stocking. A recruiter would rank this candidate #2 or #3 because the hard-skill transfer is substantial. Gap: no retail merchandising or planogram knowledge."
+  }
+};
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SCALE DEFINITIONS
+// ═══════════════════════════════════════════════════════════════════════════
+
+const scales = [
+  {
+    id: 1,
+    name: "Scale 1 — Binary Compliance",
+    badge: "conservative",
+    subtitle: "Only explicit screening question answers. No inference, no context, no AI summary.",
+    sources: "3 non-knockout binary questions",
+    layers: "Layer 0 only",
+    llm: "None",
+    regulatory: "Maximum defensibility",
+    qCount: "3 scored (+ 2 knockout gates)",
+    desc: "The system evaluates only the 3 non-knockout screening questions as preferred qualifications (weight = 1). The 2 knockout questions (overnight, lifting) are pass/fail gates handled before scoring and produce no differentiation. With only 3 low-weight preferred qualifications, scores cluster in a narrow band (33-100). Two candidates with identical answers are completely indistinguishable.",
+    getQuals(k) {
+      const c = C[k];
+      return [
+        { text:"Prior stocking/freight experience", type:"pref", met:c.stocked, ev: c.stocked?"Yes":"No" },
+        { text:"Comfortable with pallet jacks/hand trucks", type:"pref", met:c.pallet, ev: c.pallet?"Yes":"No" },
+        { text:"Comfortable in cooler/freezer", type:"pref", met:c.cooler, ev: c.cooler?"Yes":"No" }
+      ];
+    },
+    getSummary(k) { return null; },
+    getDiff(k) {
+      return {
+        maria: "Pallet jack + cooler; no stocking",
+        carlos: "Cooler only; no equipment or stocking",
+        james: "Cooler only; identical to Carlos — no differentiation",
+        priya: "Only candidate with Yes on all 3 questions",
+        derek: "Pallet jack + cooler; no stocking"
+      }[k];
+    }
+  },
+  {
+    id: 2,
+    name: "Scale 2 — Extended Questions",
+    badge: "moderate",
+    subtitle: "PS-guided questions surface more qualifications. Binary, deterministic, no inference.",
+    sources: "5 scored questions (2 required + 3 preferred)",
+    layers: "Layer 0",
+    llm: "Stage 1 only (qualification mapping)",
+    regulatory: "High defensibility",
+    qCount: "5 scored qualifications",
+    desc: "Professional Services guides the customer to configure 5 scoring questions: 2 required (overnight availability, physical lifting — now scored at 4x weight, not just knockout gates) and the same 3 preferred questions. The 4:1 required/preferred weighting creates meaningful separation because everyone passes the required qualifications, but candidates who miss preferred questions fall behind. Still, Carlos and James are nearly indistinguishable — the question set doesn't capture enough signal to separate them.",
+    getQuals(k) {
+      const c = C[k];
+      return [
+        { text:"Available for overnight shifts (9pm-9am)", type:"req", met:c.overnight, ev:"Yes" },
+        { text:"Can lift up to 50 lbs occasionally", type:"req", met:c.lift, ev:"Yes" },
+        { text:"Prior stocking/freight experience", type:"pref", met:c.stocked, ev: c.stocked?"Yes":"No" },
+        { text:"Comfortable with pallet jacks/hand trucks", type:"pref", met:c.pallet, ev: c.pallet?"Yes":"No" },
+        { text:"Comfortable in cooler/freezer", type:"pref", met:c.cooler, ev: c.cooler?"Yes":"No" }
+      ];
+    },
+    getSummary(k) { return null; },
+    getDiff(k) {
+      return {
+        maria: "Meets 4/5: pallet jack + cooler offset missing stocking",
+        carlos: "Meets 3/5: only cooler beyond the 2 required Qs",
+        james: "Meets 3/5: identical to Carlos — still no differentiation",
+        priya: "Meets 5/5: all qualifications met",
+        derek: "Meets 4/5: pallet jack + cooler offset missing stocking"
+      }[k];
+    }
+  },
+  {
+    id: 3,
+    name: "Scale 3 — Smart Questions + AI Summary",
+    badge: "balanced",
+    subtitle: "Vertical-tailored questions (10 total) designed to surface transferable skills. LLM generates neutral summary.",
+    sources: "10 screening questions (tailored to Grocery/Retail vertical)",
+    layers: "Layer 0 + Layer 1",
+    llm: "Stage 1 (mapping) + Application Summary",
+    regulatory: "Moderate — within PRD scope at GA",
+    qCount: "10 scored qualifications (3 required + 7 preferred)",
+    desc: "The Qualification & Scoring Wizard (or PS) recommends vertical-specific questions for grocery stocking. Instead of just 'have you stocked shelves?', the system asks about adjacent skills: FIFO rotation, display building, freight receiving, night/weekend availability patterns, sustained physical demand, temperature-controlled environments, inventory systems, and safety protocols. This creates a 10-question rubric (3 required, 7 preferred) that produces a much wider score band. Candidates with tangentially relevant experience (line cook, delivery driver) can now earn partial credit on questions that surface transferable skills, while truly unrelated backgrounds fall further behind. The LLM generates a neutral Application Summary.",
+    getQuals(k) {
+      const c = C[k]; const e = extraQs[k];
+      return [
+        { text:"Available for overnight shifts", type:"req", met:c.overnight, ev:"Yes" },
+        { text:"Can lift up to 50 lbs occasionally", type:"req", met:c.lift, ev:"Yes" },
+        { text:"Comfortable standing/walking 8+ hour shifts", type:"req", met:e.standWalk, ev:e.standWalk?"Yes":"No" },
+        { text:"Prior stocking, freight, or receiving experience", type:"pref", met:c.stocked || e.receiving, ev:(c.stocked||e.receiving)?"Yes":"No" },
+        { text:"Comfortable with pallet jacks/hand trucks", type:"pref", met:c.pallet, ev:c.pallet?"Yes":"No" },
+        { text:"Comfortable in cooler/freezer", type:"pref", met:c.cooler, ev:c.cooler?"Yes":"No" },
+        { text:"Familiar with product rotation (FIFO)", type:"pref", met:e.fifo, ev:e.fifo?"Yes":"No" },
+        { text:"Experience building displays or planograms", type:"pref", met:e.displays, ev:e.displays?"Yes":"No" },
+        { text:"Regularly work nights, weekends, and holidays", type:"pref", met:e.nightWeekends, ev:e.nightWeekends?"Yes":"No" },
+        { text:"Sustained physical demand in current/prior role", type:"pref", met:e.physicalDemand, ev:e.physicalDemand?"Yes":"No" }
+      ];
+    },
+    getSummary(k) { return summaries[3][k]; },
+    getDiff(k) {
+      return {
+        maria: "Receiving + nights/weekends + physical demand; still no FIFO or displays",
+        carlos: "Nights/weekends only; no physical demand, no receiving, no skills",
+        james: "Nothing beyond base requirements — no transferable skill signal at all",
+        priya: "All 10 met: direct stocking + FIFO + displays + receiving + physical",
+        derek: "Receiving + FIFO + physical + nights/weekends; strong transferable signal"
+      }[k];
+    }
+  },
+  {
+    id: 4,
+    name: "Scale 4 — Work History Inference",
+    badge: "advanced",
+    subtitle: "Layer 3 classifies work history. System infers role relevance from job titles, employers, and sector.",
+    sources: "10 screening Qs + work history (FEATURE-EXTRACTION-v1.0)",
+    layers: "Layer 0 + Layer 1 + Layer 3 (semantic classification)",
+    llm: "Stage 1 + Summary + structured field extraction",
+    regulatory: "Moderate — Tier 3 evidence flagged separately",
+    qCount: "12 evaluation points (3 req + 9 pref, includes 2 inferred)",
+    desc: "The system now incorporates Layer 3 evidence: it reads declared work history (job titles, employers, tenure) and classifies sector relevance using FEATURE-EXTRACTION-v1.0. A UPS driver's job is classified as logistics-adjacent, providing evidence for equipment operation and physical labor even if the candidate answered 'No' on those direct screening questions. Two additional preferred qualifications are evaluated purely from work history: sector relevance and physical demand pattern. Tier 3 evidence is always labeled as such in the score explanation. This is post-GA scope per the PRD, but the architecture supports it.",
+    getQuals(k) {
+      const c = C[k]; const e = extraQs[k]; const w = workHistory[k];
+      const sectorMet = w.sectorMatch !== "none";
+      const physInferred = w.physLevel === "high";
+      const equipInferred = w.equipLevel === "high" || w.equipLevel === "moderate";
+      const coldInferred = w.coldExposure;
+      const invInferred = w.inventoryExp;
+      return [
+        { text:"Available for overnight shifts", type:"req", met:c.overnight, ev:"Screening Q: Yes", tier:1 },
+        { text:"Can lift up to 50 lbs occasionally", type:"req", met:c.lift, ev:"Screening Q: Yes", tier:1 },
+        { text:"Comfortable standing/walking 8+ hours", type:"req", met:e.standWalk, ev:"Screening Q: Yes", tier:1 },
+        { text:"Prior stocking, freight, or receiving", type:"pref", met:c.stocked||e.receiving, ev:(c.stocked||e.receiving)?"Screening Q: Yes":"Screening Q: No", tier:1 },
+        { text:"Comfortable with pallet jacks/hand trucks", type:"pref", met:c.pallet||equipInferred, ev:c.pallet?"Screening Q: Yes":(equipInferred?"Tier 3: "+w.title+" at "+w.employer+" involves equipment operation":"Screening Q: No"), tier:c.pallet?1:(equipInferred?3:1) },
+        { text:"Comfortable in cooler/freezer", type:"pref", met:c.cooler||coldInferred, ev:c.cooler?"Screening Q: Yes":(coldInferred?"Tier 3: Role involves cold-environment work":"Screening Q: Yes"), tier:1 },
+        { text:"Familiar with FIFO rotation", type:"pref", met:e.fifo||invInferred, ev:e.fifo?"Screening Q: Yes":(invInferred?"Tier 3: Inventory experience inferred from role":"Screening Q: No"), tier:e.fifo?1:(invInferred?3:1) },
+        { text:"Experience building displays/planograms", type:"pref", met:e.displays, ev:e.displays?"Screening Q: Yes":"No evidence", tier:1 },
+        { text:"Regularly work nights/weekends/holidays", type:"pref", met:e.nightWeekends, ev:e.nightWeekends?"Screening Q: Yes":"Screening Q: No", tier:1 },
+        { text:"Sustained physical demand in role", type:"pref", met:e.physicalDemand||physInferred, ev:e.physicalDemand?"Screening Q: Yes":(physInferred?"Tier 3: "+w.title+" classified as high physical demand":"Screening Q: No"), tier:e.physicalDemand?1:(physInferred?3:1) },
+        { text:"Sector relevance (warehouse/retail/food service)", type:"pref", met:sectorMet, ev:sectorMet?"Tier 3: "+w.title+" at "+w.employer+" classified as "+w.sectorMatch:"Tier 3: No sector overlap detected", tier:3 },
+        { text:"Equipment operation in work history", type:"pref", met:equipInferred, ev:equipInferred?"Tier 3: "+w.equipLevel+" equipment usage confirmed":"Tier 3: No equipment experience in work history", tier:3 }
+      ];
+    },
+    getSummary(k) { return summaries[4][k]; },
+    getDiff(k) {
+      return {
+        maria: "UPS classified logistics-adjacent; Tier 3 adds equipment + physical + sector evidence",
+        carlos: "Uber classified no overlap; Tier 3 finds nothing transferable, widens gap vs. Maria",
+        james: "Bus driving classified no overlap; Tier 3 finds nothing, drops below Carlos on nights/weekends",
+        priya: "Walmart classified retail-direct; Tier 3 confirms + extends all screening evidence",
+        derek: "Chipotle classified food-service; Tier 3 adds cold-chain + inventory + sector evidence"
+      }[k];
+    }
+  },
+  {
+    id: 5,
+    name: "Scale 5 — Full AI-Forward",
+    badge: "ai",
+    subtitle: "Mimics expert recruiter judgment. Infers transferable skills, rates industry adjacency, weighs trainability.",
+    sources: "10 screening Qs + work history + skill inference + industry match",
+    layers: "Layer 0 + Layer 1 + Layer 3 + behavioral inference",
+    llm: "Full pipeline: mapping, extraction, inference, summary, transferability",
+    regulatory: "Requires additional compliance review — post-GA",
+    qCount: "14 evaluation points (3 req + 11 pref, includes 4 inferred)",
+    desc: "This is the aspirational state. The system doesn't just classify job titles — it infers transferable skills, rates industry adjacency on a gradient, and weighs how well the candidate's profile maps to the target role. A UPS driver gets credit for logistics-adjacent freight handling even without direct stocking experience. A line cook's daily cooler work and inventory receiving count as strong transferable evidence. But a rideshare driver's schedule flexibility is recognized while their total lack of physical/equipment/inventory skills is surfaced as a clear gap. The system produces a ranking that closely matches what an experienced recruiter would decide after reading all five applications. Post-GA scope requiring the ML ranking model and additional compliance work.",
+    getQuals(k) {
+      const c = C[k]; const e = extraQs[k]; const w = workHistory[k]; const ai = aiInfer[k];
+      return [
+        { text:"Available for overnight shifts", type:"req", met:c.overnight, ev:"Screening Q: Yes", tier:1 },
+        { text:"Can lift up to 50 lbs occasionally", type:"req", met:c.lift, ev:"Screening Q: Yes", tier:1 },
+        { text:"Comfortable standing/walking 8+ hours", type:"req", met:e.standWalk, ev:"Screening Q: Yes", tier:1 },
+        { text:"Direct stocking or freight handling", type:"pref", met:c.stocked||ai.stockTransfer, ev:c.stocked?"Screening Q: Yes":(ai.stockTransfer?"Inferred: freight handling at "+w.employer+" transfers to stocking":"No direct or transferable stocking experience"), tier:c.stocked?1:"inf" },
+        { text:"Equipment operation (pallet jacks, hand trucks)", type:"pref", met:c.pallet||ai.equipTransfer, ev:c.pallet?"Screening Q: Yes":(ai.equipTransfer?"Inferred: "+w.title+" operates material handling equipment daily":"No equipment experience"), tier:c.pallet?1:"inf" },
+        { text:"Cold environment tolerance", type:"pref", met:c.cooler||ai.coldTransfer, ev:ai.coldTransfer?"Confirmed: daily cooler/freezer exposure in "+w.title+" role":(c.cooler?"Self-declared: comfortable":"No evidence"), tier:ai.coldTransfer?"inf":1 },
+        { text:"Inventory management or FIFO", type:"pref", met:e.fifo||ai.fifoTransfer, ev:(e.fifo||ai.fifoTransfer)?"Confirmed: inventory rotation experience":"No FIFO or inventory experience", tier:e.fifo?1:"inf" },
+        { text:"Retail or merchandising knowledge", type:"pref", met:e.displays||ai.merchandiseTransfer, ev:ai.merchandiseTransfer?"Confirmed: planogram and display experience":(e.displays?"Screening Q: Yes":"No retail merchandising background"), tier:1 },
+        { text:"Industry adjacency (grocery/warehouse/logistics)", type:"pref", met:ai.industryAdj!=="none", ev:"Industry match: "+ai.industryAdj, tier:"inf" },
+        { text:"Schedule flexibility (nights, weekends, holidays)", type:"pref", met:ai.schedTransfer, ev:ai.schedTransfer?"Confirmed: demonstrated pattern of non-standard hours":"Limited schedule flexibility evidence", tier:"inf" },
+        { text:"Physical endurance and sustained labor", type:"pref", met:ai.physTransfer, ev:ai.physTransfer?"Role involves sustained physical labor exceeding job requirements":"Physical demand below role threshold", tier:"inf" },
+        { text:"Safety protocol awareness", type:"pref", met:e.safetyProtocol||ai.safetyTransfer, ev:(e.safetyProtocol||ai.safetyTransfer)?"Safety awareness confirmed":"No evidence", tier:e.safetyProtocol?1:"inf" },
+        { text:"Temperature-controlled environment experience", type:"pref", met:e.tempControl||ai.coldTransfer, ev:(e.tempControl||ai.coldTransfer)?"Work history confirms temperature-controlled environment":"No evidence", tier:e.tempControl?1:"inf" },
+        { text:"Customer service in prior role", type:"pref", met:e.custService||w.custService==="high", ev:(e.custService||w.custService==="high")?"Confirmed":"Not demonstrated", tier:e.custService?1:"inf" }
+      ];
+    },
+    getSummary(k) { return summaries[5][k]; },
+    getDiff(k) {
+      return {
+        maria: "Logistics adjacency + equipment + physical endurance; missing merchandising and cold-chain",
+        carlos: "Schedule flexibility + customer service are only transferable assets; everything else is a gap",
+        james: "Weakest: safety awareness is sole transferable skill; no physical, schedule, or industry overlap",
+        priya: "Near-perfect: every evaluation point met through direct or confirmed experience",
+        derek: "Strong: cold-chain + FIFO + physical + equipment; food-service provides substantial transfer"
+      }[k];
+    }
+  }
+];
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SCORING ENGINE (matches PRD Section 7.3.2)
+// ═══════════════════════════════════════════════════════════════════════════
+
+function calcScore(quals) {
+  let tw = 0, ts = 0;
+  for (const q of quals) {
+    if (q.met === null || q.met === undefined) continue;
+    const w = q.type === "req" ? 4 : 1;
+    tw += w;
+    if (q.met) ts += w;
+  }
+  return tw ? Math.round((ts / tw) * 100) : null;
+}
+
+function scoreClass(s) {
+  if (s === null) return "score-none";
+  if (s >= 70) return "score-high";
+  if (s >= 45) return "score-mid";
+  return "score-low";
+}
+
+function tierBadge(tier) {
+  if (!tier || tier === 1) return "";
+  if (tier === 3) return ' <span class="tier-badge tier-3">TIER 3</span>';
+  if (tier === "inf") return ' <span class="tier-badge tier-inf">INFERRED</span>';
+  return "";
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════════════════════════
+
+const tabBar = document.getElementById("tabBar");
+const panels = document.getElementById("panels");
+
+scales.forEach((scale, si) => {
+  const tab = document.createElement("div");
+  tab.className = "tab" + (si===0?" active":"");
+  tab.textContent = "Scale " + scale.id;
+  tab.onclick = () => switchTab(si);
+  tabBar.appendChild(tab);
+
+  const panel = document.createElement("div");
+  panel.className = "scale-panel" + (si===0?" active":"");
+
+  // Compute scores
+  const results = order.map(k => {
+    const quals = scale.getQuals(k);
+    return { k, name:C[k].name, bg:C[k].bg, quals, score:calcScore(quals), summary:scale.getSummary(k), diff:scale.getDiff(k) };
+  });
+  const ranked = [...results].sort((a,b) => (b.score||0) - (a.score||0));
+
+  // Score spread visualization
+  const maxScore = Math.max(...ranked.map(r=>r.score||0));
+  const minScore = Math.min(...ranked.map(r=>r.score||0));
+  const spread = maxScore - minScore;
+
+  let spreadHtml = `<div class="spread-chart">`;
+  ranked.forEach(r => {
+    const h = Math.max(16, ((r.score||0) / 100) * 64);
+    const color = r.score >= 70 ? "var(--success-main)" : (r.score >= 45 ? "var(--warning-main)" : "var(--error-main)");
+    spreadHtml += `<div class="spread-bar-wrap"><div class="spread-bar" style="height:${h}px;background:${color};"></div><div class="spread-score">${r.score}</div><div class="spread-label">${r.name.split(" ")[0]}</div></div>`;
+  });
+  spreadHtml += `</div>`;
+
+  // Header
+  let html = `
+    <div class="scale-header">
+      <span class="scale-badge badge-${scale.badge}">${scale.name}</span>
+      <p class="body1" style="margin-bottom:8px;">${scale.subtitle}</p>
+      <p class="body2" style="color:var(--text-secondary);margin-bottom:16px;">${scale.desc}</p>
+      <div class="scale-meta">
+        <div class="meta-item"><div class="meta-label">Evidence Sources</div><div class="meta-value body2">${scale.sources}</div></div>
+        <div class="meta-item"><div class="meta-label">Scored Qualifications</div><div class="meta-value body2">${scale.qCount}</div></div>
+        <div class="meta-item"><div class="meta-label">LLM Role</div><div class="meta-value body2">${scale.llm}</div></div>
+        <div class="meta-item"><div class="meta-label">Regulatory Posture</div><div class="meta-value body2">${scale.regulatory}</div></div>
+      </div>
+      <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--ui-divider);">
+        <h5 style="margin-bottom:4px;">Score Spread: ${spread} points (${minScore} – ${maxScore})</h5>
+        <p class="caption">Wider spread = better differentiation between candidates</p>
+        ${spreadHtml}
+      </div>
+    </div>
+  `;
+
+  // Ranking table
+  html += `
+    <div style="background:var(--bg-paper);border-radius:4px;padding:20px;margin-bottom:24px;">
+      <h3>Ranking</h3>
+      <table class="ranking-table">
+        <thead><tr><th style="width:40px;">#</th><th>Candidate</th><th>Background</th><th style="width:70px;">Score</th><th>Key Differentiator</th></tr></thead>
+        <tbody>
+  `;
+  ranked.forEach((r, ri) => {
+    html += `<tr><td><strong>${ri+1}</strong></td><td><strong>${r.name}</strong></td><td style="color:var(--text-secondary);">${r.bg}</td><td><strong>${r.score!==null?r.score:"—"}</strong></td><td style="font-size:13px;">${r.diff}</td></tr>`;
+  });
+  html += `</tbody></table></div>`;
+
+  // Cards
+  html += `<h3 style="margin-bottom:16px;">Candidate Detail</h3><div class="candidates-grid">`;
+  ranked.forEach((r, ri) => {
+    const uid = `s${si}c${ri}`;
+    let qualsHtml = "";
+    r.quals.forEach(q => {
+      const icon = q.met ? "qi-met" : "qi-not";
+      const sym = q.met ? "✓" : "✗";
+      const typeLabel = q.type==="req" ? " (Req)" : "";
+      qualsHtml += `<div class="qual-item"><div class="qual-icon ${icon}">${sym}</div><div><div class="qual-text">${q.text}${typeLabel}${tierBadge(q.tier)}</div><div class="qual-evidence">${q.ev}</div></div></div>`;
+    });
+
+    let summaryBlock = "";
+    if (r.summary) {
+      summaryBlock = `<div class="card-summary"><div class="summary-chip" onclick="toggleSummary('${uid}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M4 6h16M4 12h16M4 18h16"/></svg>AI Summary</div><div class="summary-text" id="sum-${uid}">${r.summary}</div></div>`;
+    }
+
+    html += `
+      <div class="card">
+        <div class="card-rank rank-${ri+1}">#${ri+1}</div>
+        <div class="card-top">
+          <div><div class="card-name">${r.name}</div><div class="card-bg">${r.bg}</div></div>
+          <div class="score-circle ${scoreClass(r.score)}">${r.score!==null?r.score:"N/A"}</div>
+        </div>
+        ${summaryBlock}
+        <div class="qual-list"><h5 style="margin-bottom:8px;">Qualification Breakdown</h5>${qualsHtml}</div>
+      </div>
+    `;
+  });
+  html += `</div>`;
+
+  html += `<div class="disclaimer"><strong>Disclaimer:</strong> This AI-generated score supports your decision-making. All hiring decisions require human review. Factors assessed are based solely on job qualifications and verifiable application data. No protected characteristics (age, gender, race, etc.) are considered. Per NYC LL144, GDPR Art. 22, and EU AI Act requirements.</div>`;
+
+  panel.innerHTML = html;
+  panels.appendChild(panel);
+});
+
+function switchTab(idx) {
+  document.querySelectorAll(".tab").forEach((t,i) => t.classList.toggle("active", i===idx));
+  document.querySelectorAll(".scale-panel").forEach((p,i) => p.classList.toggle("active", i===idx));
+}
+function toggleSummary(uid) {
+  document.getElementById("sum-"+uid).classList.toggle("open");
+}
+</script>
+</body>
+</html>
