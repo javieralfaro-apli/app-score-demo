@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Application Score — 4 Summary Approaches (HM Workspace)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #1B5BD8;
+      --primary-light: #146FEB;
+      --primary-dark: #213AB9;
+      --success: #008556;
+      --success-light: #E5F5EF;
+      --success-dark: #00572D;
+      --warning: #C25604;
+      --warning-light: #FDF3E7;
+      --warning-dark: #8B2800;
+      --error: #9C0909;
+      --error-light: #FDEAEA;
+      --info: #0A4E9A;
+      --info-light: #E8F2FA;
+      --informational: #058194;
+      --informational-light: #DFEAEC;
+      --informational-dark: #035C69;
+      --ai: #775FEC;
+      --ai-light: #ECE9FA;
+      --ai-dark: #3C1487;
+      --text-primary: rgba(0,0,0,0.87);
+      --text-secondary: rgba(0,0,0,0.67);
+      --text-disabled: rgba(0,0,0,0.38);
+      --paper: #FFFFFF;
+      --bg: #EFF2F3;
+      --divider: #BDBDBD;
+      --border: #E0E0E0;
+      --grey50: #FAFAFA;
+      --grey100: #F5F5F5;
+      --grey200: #EEEEEE;
+      --grey300: #E0E0E0;
+      --grey400: #BDBDBD;
+      --grey600: #757575;
+      --grey700: #616161;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #1a1a2e;
+      min-height: 100vh;
+      color: var(--text-primary);
+      padding: 32px 20px;
+    }
+
+    /* Page header */
+    .page-header {
+      max-width: 1780px;
+      margin: 0 auto 32px;
+      text-align: center;
+      color: #fff;
+    }
+    .page-header h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.3px; margin-bottom: 6px; }
+    .page-header p { font-size: 15px; opacity: 0.6; max-width: 740px; margin: 0 auto; line-height: 1.5; }
+
+    /* Grid */
+    .phones-grid {
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+      max-width: 1780px;
+      margin: 0 auto;
+      flex-wrap: wrap;
+    }
+    .phone-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+    .phone-label { color: rgba(255,255,255,0.9); font-size: 15px; font-weight: 700; }
+    .phone-sublabel { color: rgba(255,255,255,0.45); font-size: 12px; margin-top: 2px; text-align: center; max-width: 300px; }
+    .approach-tag {
+      display: inline-block; padding: 3px 10px; border-radius: 12px;
+      font-size: 11px; font-weight: 700; letter-spacing: 0.4px; text-transform: uppercase; margin-bottom: 4px;
+    }
+    .approach-tag.l1 { background: var(--grey200); color: var(--grey700); }
+    .approach-tag.l2 { background: var(--info-light); color: var(--info); }
+    .approach-tag.l3 { background: var(--warning-light); color: var(--warning); }
+    .approach-tag.l4 { background: var(--ai-light); color: var(--ai-dark); }
+
+    /* ─── Phone frame ─── */
+    .phone {
+      width: 390px;
+      background: var(--bg);
+      border-radius: 32px;
+      overflow: hidden;
+      box-shadow: 0 25px 80px rgba(0,0,0,0.4);
+      position: relative;
+    }
+    .status-bar {
+      display: flex; justify-content: space-between;
+      padding: 12px 24px 0; font-size: 12px; font-weight: 600;
+      color: var(--text-primary); background: var(--paper);
+    }
+    .app-bar {
+      display: flex; align-items: center;
+      padding: 12px 16px; background: var(--paper);
+      gap: 12px; border-bottom: 1px solid var(--border);
+    }
+    .app-bar .back-btn {
+      width: 32px; height: 32px; display: flex; align-items: center;
+      justify-content: center; border-radius: 8px; border: none; background: none;
+    }
+    .app-bar .title { font-size: 16px; font-weight: 600; color: var(--text-primary); }
+
+    /* ─── Profile header (matching Tim's Figma 327:33600) ─── */
+    .profile-header {
+      background: var(--paper);
+      padding: 16px 16px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .profile-name {
+      font-size: 22px; font-weight: 700; color: var(--text-primary);
+      letter-spacing: -0.3px; margin-bottom: 8px;
+    }
+    .profile-stage-chip {
+      display: inline-block;
+      padding: 4px 12px; border-radius: 4px;
+      font-size: 13px; font-weight: 400;
+      border: 1px solid var(--grey400);
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+    .profile-contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 16px;
+    }
+    .profile-contact-item {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 13px; color: var(--text-secondary);
+    }
+    .profile-contact-item .contact-icon {
+      color: var(--informational-dark);
+      flex-shrink: 0;
+    }
+
+    /* ─── AI Summary card (Tim's Figma: Frame 8208) ─── */
+    /* Sparkles icon left, text right, light purple bg, rounded, 16px padding, below name block */
+    .ai-summary-card {
+      background: var(--ai-light);
+      border-radius: 12px;
+      padding: 20px 16px;
+      margin: 12px 16px 0;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+    .ai-summary-card .sparkle-col {
+      flex-shrink: 0;
+      width: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+    .ai-summary-card .sparkle-icon { color: var(--ai); }
+    .ai-summary-card .summary-text {
+      font-size: 14px;
+      line-height: 1.55;
+      color: var(--text-primary);
+      flex: 1;
+    }
+    .ai-summary-card .summary-text strong { font-weight: 700; }
+
+    /* Qualification chips row (for approaches that add them) */
+    .qual-chips {
+      display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px;
+    }
+    .qual-chip {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 4px 10px; border-radius: 16px;
+      font-size: 12px; font-weight: 600; line-height: 18px;
+    }
+    .qual-chip.met { background: var(--success-light); color: var(--success-dark); }
+    .qual-chip.not-met { background: var(--error-light); color: var(--error); }
+    .qual-chip.warn { background: var(--warning-light); color: var(--warning-dark); }
+    .qual-chip .ci { font-size: 13px; line-height: 1; }
+
+    /* Risk callout (L4 only) */
+    .risk-callout {
+      display: flex; gap: 10px; padding: 10px 12px;
+      border-radius: 8px; background: var(--warning-light); margin-top: 10px;
+    }
+    .risk-callout-icon { color: var(--warning); font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+    .risk-callout-text { font-size: 13px; line-height: 1.45; color: var(--warning-dark); }
+    .risk-callout-text strong { font-weight: 600; }
+
+    /* ─── Scrollable body ─── */
+    .phone-body {
+      padding: 12px 16px 32px;
+      max-height: 680px;
+      overflow-y: auto;
+    }
+
+    /* Section header (blue, title case - Tim v3) */
+    .section-header {
+      font-size: 16px; font-weight: 700; color: var(--primary);
+      padding: 12px 0 8px;
+    }
+
+    /* ─── Score Detail card (matching Tim's Figma exactly) ─── */
+    .score-card {
+      background: var(--paper);
+      border-radius: 12px;
+      padding: 20px 16px;
+      margin-bottom: 12px;
+    }
+
+    /* Teal dot meter (Tim's score visualization) */
+    .dot-meter {
+      display: flex; gap: 6px; margin: 8px 0 16px;
+    }
+    .dot-meter .dot {
+      width: 10px; height: 10px; border-radius: 50%;
+    }
+    .dot-meter .dot.filled { background: var(--informational); }
+    .dot-meter .dot.empty { background: var(--grey300); }
+
+    /* Qualification sub-header (Required / Preferred) */
+    .qual-section-header {
+      font-size: 15px; font-weight: 700;
+      color: var(--informational);
+      margin: 16px 0 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--grey200);
+    }
+    .qual-section-header:first-of-type {
+      border-top: none;
+      padding-top: 0;
+      margin-top: 8px;
+    }
+
+    /* Individual qualification row (Tim's design) */
+    .qual-row {
+      margin-bottom: 16px;
+    }
+    .qual-row-name {
+      font-size: 14px; font-weight: 700; color: var(--text-primary);
+    }
+    .qual-row-evidence {
+      font-size: 13px; color: var(--text-secondary);
+      margin-top: 2px; line-height: 1.4;
+    }
+    .qual-row .dot-meter { margin: 6px 0 0; }
+
+    /* Evidence expanded (for conservative+) */
+    .qual-row-detail {
+      font-size: 12px; color: var(--text-disabled);
+      margin-top: 4px; line-height: 1.35;
+      font-style: italic;
+    }
+
+    /* Score stat row (compact, for approaches that want a number) */
+    .score-number-row {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 6px;
+    }
+    .score-number-label { font-size: 13px; color: var(--text-secondary); }
+    .score-number-value { font-size: 22px; font-weight: 700; color: var(--ai); }
+
+    /* Counts summary */
+    .counts-row {
+      display: flex; gap: 16px; margin-bottom: 12px;
+    }
+    .count-item {
+      font-size: 13px; color: var(--text-secondary);
+    }
+    .count-item strong {
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    /* Inferred signal section (L4) */
+    .inferred-header {
+      font-size: 13px; font-weight: 700; color: var(--ai);
+      margin: 16px 0 10px;
+      padding-top: 12px;
+      border-top: 1px solid var(--grey200);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .inferred-tag {
+      font-size: 10px; font-weight: 600; color: var(--ai);
+      background: var(--ai-light); border-radius: 8px;
+      padding: 1px 6px; letter-spacing: 0.3px;
+      text-transform: uppercase;
+    }
+    .inferred-row {
+      display: flex; align-items: flex-start; gap: 10px;
+      margin-bottom: 10px;
+    }
+    .inferred-icon {
+      width: 20px; height: 20px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 1px; font-size: 11px;
+    }
+    .inferred-icon.met { background: var(--success-light); color: var(--success); }
+    .inferred-icon.warn { background: var(--warning-light); color: var(--warning); }
+    .inferred-content { flex: 1; }
+    .inferred-name { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+    .inferred-evidence { font-size: 12px; color: var(--text-secondary); margin-top: 1px; line-height: 1.35; }
+
+    /* AI disclosure */
+    .ai-disclosure {
+      font-size: 11px; color: var(--text-disabled); text-align: center;
+      margin-top: 14px; padding-top: 10px;
+      border-top: 1px solid var(--grey200); line-height: 1.4;
+    }
+
+    /* Feedback row (L4) */
+    .feedback-row {
+      display: flex; align-items: center; justify-content: flex-end;
+      gap: 8px; margin-top: 10px; padding-top: 8px;
+      border-top: 1px solid var(--grey200);
+    }
+    .feedback-label { font-size: 11px; color: var(--text-disabled); }
+    .feedback-btn {
+      width: 28px; height: 28px; border-radius: 50%;
+      border: 1px solid var(--grey300); background: var(--paper);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 14px; color: var(--text-disabled);
+    }
+
+    /* Annotation (design notes visible to stakeholders) */
+    .annotation {
+      margin: 6px 16px 0;
+      padding: 8px 12px;
+      border-radius: 8px;
+      background: rgba(119,95,236,0.06);
+      border-left: 3px solid var(--ai);
+      font-size: 11px;
+      line-height: 1.45;
+      color: var(--ai-dark);
+    }
+    .annotation strong { font-weight: 700; }
+
+    @media (max-width: 900px) {
+      .phones-grid { flex-direction: column; align-items: center; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Application Score: 4 Summary Approaches</h1>
+  <p>Same candidate (Maria Gonzalez, Overnight Stocker, score 74), same qualifications. Each phone shows a different summary inference level and score explainability treatment. Candidate card and Score Detail match Tim's latest HM Workspace Figma.</p>
+</div>
+
+<div class="phones-grid" id="phones"></div>
+
+<script>
+// ─── Shared data ───
+const C = {
+  name: 'Maria Gonzalez',
+  position: 'Overnight Stocker',
+  location: 'Chandler, AZ',
+  pay: '$17 USD/hr',
+  distance: '6 mi',
+  score: 74,
+  openApps: 2,
+  required: [
+    { name: '18 years or older', short: 'Age', met: true, evidence: 'Confirmed: Yes', dots: 5 },
+    { name: 'Overnight shift availability', short: 'Overnight', met: true, evidence: 'Available all nights including weekends and holidays', dots: 5 },
+    { name: 'Lift up to 50 lbs', short: 'Lifting', met: true, evidence: 'Self-declared: able to lift 50+ lbs', dots: 4 },
+  ],
+  preferred: [
+    { name: 'Warehouse/stocking experience', short: 'Stocking exp.', met: false, evidence: 'No prior stocking or warehouse roles reported', dots: 0 },
+    { name: 'Operate pallet jacks/hand trucks', short: 'Pallet jacks', met: true, evidence: 'Experience with hand trucks at prior employer', dots: 4 },
+    { name: 'Work in freezer/cooler environments', short: 'Cold storage', met: true, evidence: 'Willing to work in refrigerated and freezer environments', dots: 5 },
+  ],
+};
+const allQuals = [...C.required, ...C.preferred];
+const reqMet = C.required.filter(q => q.met).length;
+const prefMet = C.preferred.filter(q => q.met).length;
+const totalMet = reqMet + prefMet;
+
+// ─── SVG Helpers ───
+function sparkSVG(s=24) {
+  return `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/><path d="M5 19l.5 1.5L7 21l-1.5.5L5 23l-.5-1.5L3 21l1.5-.5L5 19z"/><path d="M19 11l.5 1.5L21 13l-1.5.5L19 15l-.5-1.5L17 13l1.5-.5L19 11z"/></svg>`;
+}
+function checkSVG(s=13) {
+  return `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+}
+function xSVG(s=13) {
+  return `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+}
+function warnSVG(s=13) {
+  return `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`;
+}
+function backSVG() {
+  return `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>`;
+}
+function thumbUpSVG(s=14) {
+  return `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>`;
+}
+function thumbDownSVG(s=14) {
+  return `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/></svg>`;
+}
+
+function dotMeter(filled, total=5) {
+  let h = '';
+  for (let i = 0; i < total; i++) {
+    h += `<div class="dot ${i < filled ? 'filled' : 'empty'}"></div>`;
+  }
+  return `<div class="dot-meter">${h}</div>`;
+}
+
+// ─── Shared chrome ───
+function phoneChrome() {
+  return `
+    <div class="status-bar"><span>9:41</span><span style="display:flex;gap:4px;align-items:center"><span style="font-size:11px">5G</span><span style="font-size:14px">&#9632;</span></span></div>
+    <div class="app-bar"><button class="back-btn">${backSVG()}</button><span class="title">Overnight Stocker</span></div>`;
+}
+
+function phoneSVG(s=16) {
+  return `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`;
+}
+function mailSVG(s=16) {
+  return `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>`;
+}
+function pinSVG(s=16) {
+  return `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`;
+}
+function globeSVG(s=16) {
+  return `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`;
+}
+function calendarSVG(s=16) {
+  return `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`;
+}
+
+function profileHeader() {
+  return `
+    <div class="profile-header">
+      <div class="profile-name">${C.name}</div>
+      <div class="profile-stage-chip">Interview</div>
+      <div class="profile-contact-grid">
+        <div class="profile-contact-item">${dotMeter(Math.round(C.score / 20))}</div>
+        <div class="profile-contact-item"><span class="contact-icon">${calendarSVG(14)}</span> 2/26/2025</div>
+        <div class="profile-contact-item"><span class="contact-icon">${phoneSVG(14)}</span> (480) 555-0192</div>
+        <div class="profile-contact-item"><span class="contact-icon">${mailSVG(14)}</span> mgonzalez@gmail.com</div>
+        <div class="profile-contact-item"><span class="contact-icon">${pinSVG(14)}</span> ${C.location}</div>
+        <div class="profile-contact-item"><span class="contact-icon">${globeSVG(14)}</span> Career Portal</div>
+      </div>
+    </div>`;
+}
+
+// ─── L1: MAX CONSERVATIVE ───
+function approach1() {
+  // Score Detail: met/not met only, no evidence, no dots
+  const reqRows = C.required.map(q => `
+    <div class="qual-row">
+      <div class="qual-row-name">${q.name}</div>
+      <div style="margin-top:4px"><span class="qual-chip ${q.met?'met':'not-met'}" style="font-size:11px;padding:2px 8px"><span class="ci">${q.met?checkSVG(11):xSVG(11)}</span> ${q.met?'Met':'Not met'}</span></div>
+    </div>`).join('');
+  const prefRows = C.preferred.map(q => `
+    <div class="qual-row">
+      <div class="qual-row-name">${q.name}</div>
+      <div style="margin-top:4px"><span class="qual-chip ${q.met?'met':'not-met'}" style="font-size:11px;padding:2px 8px"><span class="ci">${q.met?checkSVG(11):xSVG(11)}</span> ${q.met?'Met':'Not met'}</span></div>
+    </div>`).join('');
+
+  return `
+    <div class="phone">
+      ${phoneChrome()}
+      ${profileHeader()}
+
+      <div class="annotation">
+        <strong>L1 Summary:</strong> No narrative above Score Detail. The dot meter in the header is the only score signal. Explainability is the full source of truth.
+      </div>
+
+      <div class="phone-body">
+        <div class="section-header">Score Detail</div>
+        <div class="score-card">
+          <div class="qual-section-header" style="margin-top:0;padding-top:0;border-top:none">Required qualification</div>
+          ${reqRows}
+
+          <div class="qual-section-header">Preferred qualification</div>
+          ${prefRows}
+
+          <div class="ai-disclosure">
+            Score is calculated from screening question responses only. It does not consider resume, demographics, or protected characteristics.
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ─── L2: CONSERVATIVE ───
+function approach2() {
+  const notMet = allQuals.filter(q => !q.met);
+  const summaryText = notMet.length > 0
+    ? `Meets ${totalMet} of ${allQuals.length} qualifications. Missing: ${notMet.map(q => q.name.toLowerCase()).join(', ')}.`
+    : `Meets all ${allQuals.length} qualifications.`;
+
+  // Score Detail: Tim's exact design with dots
+  const reqRows = C.required.map(q => `
+    <div class="qual-row">
+      <div class="qual-row-name">${q.name}</div>
+      <div class="qual-row-evidence">${q.evidence}</div>
+      ${dotMeter(q.dots)}
+    </div>`).join('');
+  const prefRows = C.preferred.map(q => `
+    <div class="qual-row">
+      <div class="qual-row-name">${q.name}</div>
+      <div class="qual-row-evidence">${q.evidence}</div>
+      ${dotMeter(q.dots)}
+    </div>`).join('');
+
+  return `
+    <div class="phone">
+      ${phoneChrome()}
+      ${profileHeader()}
+
+      <div class="ai-summary-card" style="background:var(--ai-light)">
+        <div class="sparkle-col"><span class="sparkle-icon" style="color:var(--ai)">${sparkSVG()}</span></div>
+        <div class="summary-text">${summaryText}</div>
+      </div>
+
+      <div class="annotation">
+        <strong>L2 Summary:</strong> Current Apli approach. Brief, factual statement. No inference beyond "met / not met." Explainability shows evidence per qualification with dot strength meters.
+      </div>
+
+      <div class="phone-body">
+        <div class="section-header">Score Detail</div>
+        <div class="score-card">
+          ${dotMeter(Math.round(C.score / 20))}
+
+          <div class="qual-section-header" style="margin-top:0;padding-top:0;border-top:none">Required qualification</div>
+          ${reqRows}
+
+          <div class="qual-section-header">Preferred qualification</div>
+          ${prefRows}
+
+          <div class="ai-disclosure">
+            Score is calculated from screening question responses only. It does not consider resume, demographics, or protected characteristics.
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ─── L3: BOLD ───
+function approach3() {
+  const summaryHTML = `<strong>Meets all required qualifications</strong> including overnight and weekend availability, physical requirements, and age verification. Has pallet jack experience from a prior role and is willing to work in cold-storage environments. <strong>No prior warehouse or stocking experience</strong>, which may require additional onboarding time.`;
+
+  const chips = [
+    { label: 'Commute', cls: 'met' },
+    { label: 'Shift fit', cls: 'met' },
+    { label: 'Pay fit', cls: 'met' },
+    { label: 'Stocking exp.', cls: 'not-met' },
+  ];
+  const chipHTML = chips.map(ch => {
+    const icon = ch.cls === 'met' ? checkSVG() : xSVG();
+    return `<span class="qual-chip ${ch.cls}"><span class="ci">${icon}</span> ${ch.label}</span>`;
+  }).join('');
+
+  // Score Detail: Tim's dots + enriched evidence
+  const reqRows = C.required.map(q => `
+    <div class="qual-row">
+      <div class="qual-row-name">${q.name}</div>
+      <div class="qual-row-evidence">${q.evidence}</div>
+      ${dotMeter(q.dots)}
+    </div>`).join('');
+  const prefRows = C.preferred.map(q => `
+    <div class="qual-row">
+      <div class="qual-row-name">${q.name}</div>
+      <div class="qual-row-evidence">${q.evidence}</div>
+      ${dotMeter(q.dots)}
+    </div>`).join('');
+
+  return `
+    <div class="phone">
+      ${phoneChrome()}
+      ${profileHeader()}
+
+      <div class="ai-summary-card">
+        <div class="sparkle-col"><span class="sparkle-icon" style="color:var(--ai)">${sparkSVG()}</span></div>
+        <div class="summary-text">
+          ${summaryHTML}
+          <div class="qual-chips">${chipHTML}</div>
+        </div>
+      </div>
+
+      <div class="annotation">
+        <strong>L3 Summary:</strong> FactoryFix-style. Makes inferences ("may require additional onboarding time"). Adds signal chips for commute, shift, pay fitness beyond screening questions. Bolder than current Apli but factually grounded.
+      </div>
+
+      <div class="phone-body">
+        <div class="section-header">Score Detail</div>
+        <div class="score-card">
+          ${dotMeter(Math.round(C.score / 20))}
+
+          <div class="qual-section-header" style="margin-top:0;padding-top:0;border-top:none">Required qualification</div>
+          ${reqRows}
+
+          <div class="qual-section-header">Preferred qualification</div>
+          ${prefRows}
+
+          <div class="ai-disclosure">
+            Score is calculated from screening question responses. Signal chips (commute, shift, pay) are derived from application data and do not affect the score.
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ─── L4: MAX BOLD ───
+function approach4() {
+  const summaryHTML = `<strong>Meets all 3 required qualifications</strong> and is available for the full overnight schedule including weekends and holidays. Equipment handling experience with pallet jacks and hand trucks from prior retail roles, comfortable with cold-storage environments. <strong>No stocking or warehouse background</strong>, but equipment familiarity and physical readiness suggest a faster ramp-up than a typical candidate without this experience.`;
+
+  const chips = [
+    { label: 'Commute', cls: 'met' },
+    { label: 'Shift fit', cls: 'met' },
+    { label: 'Pay fit', cls: 'met' },
+    { label: 'Longevity', cls: 'warn' },
+    { label: 'Stocking exp.', cls: 'not-met' },
+  ];
+  const chipHTML = chips.map(ch => {
+    const icon = ch.cls === 'met' ? checkSVG() : ch.cls === 'warn' ? warnSVG() : xSVG();
+    return `<span class="qual-chip ${ch.cls}"><span class="ci">${icon}</span> ${ch.label}</span>`;
+  }).join('');
+
+  const riskCallout = `
+    <div class="risk-callout">
+      <div class="risk-callout-icon">${warnSVG(16)}</div>
+      <div class="risk-callout-text">
+        <strong>Mild longevity concern.</strong> Two positions in the last 18 months (Circle K: 8 mo, Fry's Food: 10 mo), though she held a stable 2.5-year role at Target before that.
+      </div>
+    </div>`;
+
+  // Score Detail: Tim's dots + inferred signals section
+  const reqRows = C.required.map(q => `
+    <div class="qual-row">
+      <div class="qual-row-name">${q.name}</div>
+      <div class="qual-row-evidence">${q.evidence}</div>
+      ${dotMeter(q.dots)}
+    </div>`).join('');
+  const prefRows = C.preferred.map(q => `
+    <div class="qual-row">
+      <div class="qual-row-name">${q.name}</div>
+      <div class="qual-row-evidence">${q.evidence}</div>
+      ${dotMeter(q.dots)}
+    </div>`).join('');
+
+  const inferredSignals = [
+    { name: 'Commute feasibility', icon: 'met', evidence: 'Lives 6 miles from store. Estimated 12-min drive.' },
+    { name: 'Pay alignment', icon: 'met', evidence: '$17/hr expectation is within the $16-18/hr budget.' },
+    { name: 'Job stability', icon: 'warn', evidence: 'Two roles in 18 months (Circle K: 8 mo, Fry\'s Food: 10 mo). Prior: 2.5 years at Target.' },
+  ];
+  const inferredHTML = inferredSignals.map(s => {
+    const iconEl = s.icon === 'met' ? checkSVG(11) : warnSVG(11);
+    return `
+      <div class="inferred-row">
+        <div class="inferred-icon ${s.icon}">${iconEl}</div>
+        <div class="inferred-content">
+          <div class="inferred-name">${s.name}</div>
+          <div class="inferred-evidence">${s.evidence}</div>
+        </div>
+      </div>`;
+  }).join('');
+
+  return `
+    <div class="phone">
+      ${phoneChrome()}
+      ${profileHeader()}
+
+      <div class="ai-summary-card">
+        <div class="sparkle-col"><span class="sparkle-icon" style="color:var(--ai)">${sparkSVG()}</span></div>
+        <div class="summary-text">
+          ${summaryHTML}
+          <div class="qual-chips">${chipHTML}</div>
+          ${riskCallout}
+        </div>
+      </div>
+
+      <div class="annotation">
+        <strong>L4 Summary:</strong> Maximum inference. Editorial judgment ("suggest a faster ramp-up"), risk flagging (longevity warning with evidence), inferred signals section. Closest to Tim's Figma vision + FactoryFix's boldest examples.
+      </div>
+
+      <div class="phone-body">
+        <div class="section-header">Score Detail</div>
+        <div class="score-card">
+          ${dotMeter(Math.round(C.score / 20))}
+
+          <div class="qual-section-header" style="margin-top:0;padding-top:0;border-top:none">Required qualification</div>
+          ${reqRows}
+
+          <div class="qual-section-header">Preferred qualification</div>
+          ${prefRows}
+
+          <div class="inferred-header">
+            ${sparkSVG(16)} Inferred Signals <span class="inferred-tag">AI</span>
+          </div>
+          ${inferredHTML}
+
+          <div class="feedback-row">
+            <span class="feedback-label">Was this helpful?</span>
+            <button class="feedback-btn">${thumbUpSVG()}</button>
+            <button class="feedback-btn">${thumbDownSVG()}</button>
+          </div>
+
+          <div class="ai-disclosure">
+            Score is calculated from screening question responses. Inferred signals are AI-generated from profile data and do not affect the score. This tool does not consider demographics or protected characteristics.
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ─── Render ───
+const approaches = [
+  { id: 1, label: 'Max Conservative', tag: 'l1', sub: 'Chips only. No narrative. Lowest inference.', fn: approach1 },
+  { id: 2, label: 'Conservative', tag: 'l2', sub: 'Current Apli. Brief factual summary. Tim\'s dot meters.', fn: approach2 },
+  { id: 3, label: 'Bold', tag: 'l3', sub: 'FactoryFix-style. Inferences + signal chips.', fn: approach3 },
+  { id: 4, label: 'Max Bold', tag: 'l4', sub: 'Tim\'s Figma level. Risk flagging + inferred signals.', fn: approach4 },
+];
+
+document.getElementById('phones').innerHTML = approaches.map(a => `
+  <div class="phone-wrapper">
+    <div style="text-align:center">
+      <span class="approach-tag ${a.tag}">Level ${a.id}</span>
+      <div class="phone-label">${a.label}</div>
+      <div class="phone-sublabel">${a.sub}</div>
+    </div>
+    ${a.fn()}
+  </div>
+`).join('');
+</script>
+
+</body>
+</html>
