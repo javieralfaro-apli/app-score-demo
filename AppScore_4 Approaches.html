@@ -131,14 +131,6 @@
       color: var(--text-primary);
       margin-bottom: 8px;
     }
-    .profile-dots-date {
-      display: flex; align-items: center; gap: 16px;
-      margin-bottom: 12px;
-    }
-    .profile-dots-date .applied-date {
-      display: inline-flex; align-items: center; gap: 5px;
-      font-size: 13px; color: var(--text-secondary);
-    }
     .profile-contact-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -453,11 +445,9 @@ function profileHeader() {
     <div class="profile-header">
       <div class="profile-name">${C.name}</div>
       <div class="profile-stage-chip">Interview</div>
-      <div class="profile-dots-date">
-        ${dotMeter(Math.round(C.score / 20))}
-        <span class="applied-date"><span style="color:var(--informational-dark)">${calendarSVG(14)}</span> 2/26/2025</span>
-      </div>
       <div class="profile-contact-grid">
+        <div class="profile-contact-item">${dotMeter(Math.round(C.score / 20))}</div>
+        <div class="profile-contact-item"><span class="contact-icon">${calendarSVG(14)}</span> 2/26/2025</div>
         <div class="profile-contact-item"><span class="contact-icon">${phoneSVG(14)}</span> (480) 555-0192</div>
         <div class="profile-contact-item"><span class="contact-icon">${mailSVG(14)}</span> mgonzalez@gmail.com</div>
         <div class="profile-contact-item"><span class="contact-icon">${pinSVG(14)}</span> ${C.location}</div>
@@ -468,14 +458,7 @@ function profileHeader() {
 
 // ─── L1: MAX CONSERVATIVE ───
 function approach1() {
-  // Summary: chips only, no narrative
-  const chips = allQuals.map(q => {
-    const cls = q.met ? 'met' : 'not-met';
-    const icon = q.met ? checkSVG() : xSVG();
-    return `<span class="qual-chip ${cls}"><span class="ci">${icon}</span> ${q.short}</span>`;
-  }).join('');
-
-  // Score Detail: table only, no evidence, no dots
+  // Score Detail: met/not met only, no evidence, no dots
   const reqRows = C.required.map(q => `
     <div class="qual-row">
       <div class="qual-row-name">${q.name}</div>
@@ -492,25 +475,13 @@ function approach1() {
       ${phoneChrome()}
       ${profileHeader()}
 
-      <div class="ai-summary-card" style="background:var(--grey100)">
-        <div class="sparkle-col"><span class="sparkle-icon" style="color:var(--informational)">${sparkSVG()}</span></div>
-        <div class="summary-text">
-          <div class="qual-chips">${chips}</div>
-        </div>
-      </div>
-
       <div class="annotation">
-        <strong>L1 Summary:</strong> No narrative. Pure checklist of qualifications as chips. Hiring manager sees met/not met at a glance. Lowest inference, lowest risk.
+        <strong>L1 Summary:</strong> No narrative above Score Detail. The dot meter in the header is the only score signal. Explainability is the full source of truth.
       </div>
 
       <div class="phone-body">
         <div class="section-header">Score Detail</div>
         <div class="score-card">
-          <div class="counts-row">
-            <span class="count-item"><strong>${reqMet}/${C.required.length}</strong> required</span>
-            <span class="count-item"><strong>${prefMet}/${C.preferred.length}</strong> preferred</span>
-          </div>
-
           <div class="qual-section-header" style="margin-top:0;padding-top:0;border-top:none">Required qualification</div>
           ${reqRows}
 
