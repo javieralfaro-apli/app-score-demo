@@ -20,6 +20,7 @@
       --error-light: #FDEAEA;
       --info: #0A4E9A;
       --info-light: #E8F2FA;
+      --info-main: #0A4E9A;
       --informational: #058194;
       --informational-light: #DFEAEC;
       --informational-dark: #035C69;
@@ -100,53 +101,112 @@
       color: var(--text-primary); background: var(--paper);
     }
 
-    /* App bar */
+    /* App bar — iCIMS logo + hamburger */
     .app-bar {
-      display: flex; align-items: center; gap: 12px;
-      padding: 10px 16px 12px; background: var(--paper);
-      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 8px;
+      padding: 24px 16px; background: var(--paper);
     }
-    .app-bar .back-btn {
-      width: 32px; height: 32px; display: flex; align-items: center;
-      justify-content: center; border: none; background: none; cursor: pointer;
-      color: var(--text-primary);
+    .app-bar-logo { flex: 1; display: flex; align-items: center; }
+    .app-bar-logo img { height: 22px; width: auto; display: block; }
+    .app-bar-menu {
+      width: 24px; height: 24px; flex-shrink: 0;
+      display: flex; flex-direction: column; justify-content: center; gap: 4px;
+      cursor: pointer;
     }
-    .app-bar .title { font-size: 16px; font-weight: 600; color: var(--text-primary); }
+    .app-bar-menu span {
+      display: block; height: 2px; background: var(--text-primary); border-radius: 1px;
+    }
+    .app-bar-menu span:first-child { width: 100%; }
+    .app-bar-menu span:nth-child(2) { width: 100%; }
+    .app-bar-menu span:last-child  { width: 100%; }
+
+    /* Breadcrumb bar — back chevron + job title + prev/next */
+    .breadcrumb-bar {
+      display: flex; align-items: center;
+      padding: 8px; background: var(--paper);
+      border-top: 1px solid var(--grey200);
+      border-bottom: 1px solid var(--grey200);
+    }
+    .breadcrumb-back {
+      width: 18px; height: 18px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; cursor: pointer;
+    }
+    .breadcrumb-back svg { display: block; }
+    .breadcrumb-title {
+      flex: 1; font-size: 14px; font-weight: 600; color: var(--text-primary);
+      letter-spacing: 0.25px; line-height: 1.43; padding: 0 4px;
+    }
+    .breadcrumb-nav {
+      display: flex; align-items: center; gap: 2px; flex-shrink: 0;
+    }
+    .breadcrumb-nav-btn {
+      width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+      border: none; background: none; cursor: pointer; color: var(--text-primary);
+    }
+    .breadcrumb-nav-count {
+      font-size: 14px; color: var(--text-secondary); letter-spacing: 0.16px;
+      white-space: nowrap; padding: 0 2px;
+    }
 
     /* ── Candidate header card ── */
     .profile-header {
       background: var(--paper);
-      padding: 16px 16px 16px;
-      border-bottom: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin: 8px 16px 0;
+    }
+    /* Top section — name only */
+    .profile-header-top {
+      padding: 16px 16px 8px;
     }
     .profile-name {
-      font-size: 22px; font-weight: 700; color: var(--text-primary);
-      letter-spacing: -0.3px; margin-bottom: 8px;
+      font-size: 24px; font-weight: 600; color: var(--info);
+      letter-spacing: 0.4px; line-height: 1.2;
+    }
+    /* Bottom section — chip + contact */
+    .profile-header-bottom {
+      padding: 0 16px 16px;
+      display: flex; flex-direction: column; gap: 8px;
     }
     .profile-stage-chip {
-      display: inline-block; padding: 4px 12px; border-radius: 4px;
-      font-size: 13px; font-weight: 400; border: 1px solid var(--grey400);
-      color: var(--text-primary); margin-bottom: 10px;
+      display: inline-block; padding: 3px 12px; border-radius: 4px;
+      font-size: 14px; font-weight: 400; letter-spacing: 0.16px;
+      background: rgba(0,0,0,0.08); color: var(--text-primary);
+      align-self: flex-start;
     }
-    .profile-contact-grid {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px;
+    /* Dots + date row */
+    .profile-dots-row {
+      display: flex; align-items: center; padding: 0 8px;
+    }
+    .profile-dots-row .dot-meter { flex: 1; }
+    .profile-date-cell {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 14px; color: var(--text-primary);
+      letter-spacing: 0.25px; line-height: 1.43; width: 162px;
+    }
+    /* Phone + email row */
+    .profile-contact-row {
+      display: flex; gap: 16px; padding: 0 8px;
     }
     .profile-contact-item {
-      display: flex; align-items: center; gap: 6px;
-      font-size: 13px; color: var(--text-secondary);
+      display: flex; align-items: center; gap: 8px;
+      font-size: 14px; color: var(--primary);
+      letter-spacing: 0.25px; line-height: 1.43; flex: 1;
     }
-    .contact-icon { color: var(--informational-dark); flex-shrink: 0; }
+    .profile-contact-item.text-default { color: var(--text-primary); }
+    .contact-icon { color: var(--informational); flex-shrink: 0; }
+    .contact-icon-primary { color: var(--primary); flex-shrink: 0; }
 
     /* Dot meter (teal) */
     .dot-meter { display: flex; gap: 6px; align-items: center; }
-    .dot-meter .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-meter .dot { width: 8px; height: 8px; border-radius: 50%; }
     .dot-meter .dot.filled { background: var(--informational); }
     .dot-meter .dot.empty  { background: var(--grey300); }
 
     /* ── AI Summary card ── */
     .ai-summary-card {
       background: var(--ai-light);
-      margin: 0 16px 0;
+      margin: 8px 16px 0;
       border-radius: 12px;
       padding: 16px;
       display: flex; gap: 12px; align-items: flex-start;
@@ -281,7 +341,6 @@ const C = {
 
 // ── SVGs ──
 const svg = {
-  back: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>`,
   check: (s=13) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`,
   x:     (s=13) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
   spark: (s=20) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/><path d="M5 19l.5 1.5L7 21l-1.5.5L5 23l-.5-1.5L3 21l1.5-.5L5 19z"/><path d="M19 11l.5 1.5L21 13l-1.5.5L19 15l-.5-1.5L17 13l1.5-.5L19 11z"/></svg>`,
@@ -301,6 +360,8 @@ function dotMeter(filled, total=5) {
 }
 
 // ── Shared chrome ──
+const iCIMSLogo = `assets/icims-logo.png`;
+
 function phoneChrome() {
   return `
     <div class="status-bar">
@@ -308,8 +369,33 @@ function phoneChrome() {
       <span style="display:flex;gap:5px;align-items:center;font-size:11px">5G &#9632;</span>
     </div>
     <div class="app-bar">
-      <button class="back-btn">${svg.back}</button>
-      <span class="title">Overnight Stocker</span>
+      <div class="app-bar-logo">
+        <img src="${iCIMSLogo}" alt="iCIMS" />
+      </div>
+      <div class="app-bar-menu">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <div class="breadcrumb-bar">
+      <div class="breadcrumb-back">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <path d="M11 13L7 9L11 5" stroke="rgba(0,0,0,0.87)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <span class="breadcrumb-title">Overnight Stocker</span>
+      <div class="breadcrumb-nav">
+        <button class="breadcrumb-nav-btn">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M15 18L9 12L15 6" stroke="rgba(0,0,0,0.87)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <span class="breadcrumb-nav-count">1/20</span>
+        <button class="breadcrumb-nav-btn">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M9 18L15 12L9 6" stroke="rgba(0,0,0,0.87)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
     </div>`;
 }
 
@@ -317,15 +403,33 @@ function profileHeader() {
   const filled = Math.round(C.score / 20);
   return `
     <div class="profile-header">
-      <div class="profile-name">${C.name}</div>
-      <div class="profile-stage-chip">Interview</div>
-      <div class="profile-contact-grid">
-        <div class="profile-contact-item">${dotMeter(filled)}</div>
-        <div class="profile-contact-item"><span class="contact-icon">${svg.calendar}</span> 2/26/2025</div>
-        <div class="profile-contact-item"><span class="contact-icon">${svg.phone}</span> (480) 555-0192</div>
-        <div class="profile-contact-item"><span class="contact-icon">${svg.mail}</span> mgonzalez@gmail.com</div>
-        <div class="profile-contact-item"><span class="contact-icon">${svg.pin}</span> ${C.location}</div>
-        <div class="profile-contact-item"><span class="contact-icon">${svg.globe}</span> Career Portal</div>
+      <div class="profile-header-top">
+        <div class="profile-name">${C.name}</div>
+      </div>
+      <div class="profile-header-bottom">
+        <div class="profile-stage-chip">Interview</div>
+        <div class="profile-dots-row">
+          ${dotMeter(filled)}
+          <div class="profile-date-cell">
+            <span class="contact-icon">${svg.calendar}</span> 2/26/2025
+          </div>
+        </div>
+        <div class="profile-contact-row">
+          <div class="profile-contact-item">
+            <span class="contact-icon-primary">${svg.phone}</span> (480) 555-0192
+          </div>
+          <div class="profile-contact-item">
+            <span class="contact-icon-primary">${svg.mail}</span> mgonzalez@gmail.com
+          </div>
+        </div>
+        <div class="profile-contact-row">
+          <div class="profile-contact-item text-default">
+            <span class="contact-icon">${svg.pin}</span> ${C.location}
+          </div>
+          <div class="profile-contact-item text-default">
+            <span class="contact-icon">${svg.globe}</span> Career Portal
+          </div>
+        </div>
       </div>
     </div>`;
 }
